@@ -1,16 +1,22 @@
-"""
-Write an algorithm that, given a function f(x), number of points n, interval [a, b] and
-noise model of your choice, generates noise εi and then data yi = f(xi) + εi
-. Plot both
-the true function (with a continuous line) and the noisy data (with dots) for each noise
-model. What do you observe?
-"""
-
-import noise_test  # Import noise_test.py as a module
-
 import numpy as np
 import matplotlib.pyplot as plt
-matplotlib.use('macosx')  # Use the MacOS native backend
+import random
+
+def uniform(n,minimum,maximum):
+    error = []
+    for i in range (n):
+        # centering noise at 0, range is  -(b - a)/2 to (b - a)/2 
+        error.append(random.random() * (maximum - minimum) - (maximum - minimum) / 2)
+
+    return(error)
+
+def gaussian(n,sigma):
+    mu = 0
+    error = []
+    for i in range (n):
+        error.append(np.random.normal(mu, sigma))
+
+    return(error)
 
 def generate_noisy_data(f, n, a, b, noise_model):
     """
@@ -32,16 +38,32 @@ def generate_noisy_data(f, n, a, b, noise_model):
   
     x = np.linspace(a, b, n)
     y_true = f(x)
-    
+
+    # variance in gaussian model is sigma^2
+    # variance in uniform model is (maximum-minimum)^2/12
+    # setting these equal, we see that the maximum-minimum is equal to sqrt(12)*sigma
+    # to center the uniform noise around 0, the minimum can be written as -sqrt(12)*sigma
+    # and the maximum can be written as +sqrt(12)*sigma
+
+    sigma = 0.5
+    minimum = -np.sqrt(12) * sigma /2
+    maximum = np.sqrt(12) * sigma /2
+
     # generate noise with reproducibility 
     np.random.seed(42)
-    if noise_model == 'uniform':
-        noise = uniform(n,a,b)
-    elif noise_model == 'gaussian':
-        noise = normal(n,0.5)
-    y_noisy = y_true + noise
-    
-    return x, y_true, y_noisy
+    if noise_model == uniform:
+        noise = uniform(n,minimum,maximum)
+        y_noisy = y_true + noise
+        return x, y_true, y_noisy
+
+    elif noise_model == gaussian:
+        noise = gaussian(n,sigma)
+        y_noisy = y_true + noise
+        return x, y_true, y_noisy
+
+    else:
+        print("noise model not recognized")
+        return 
 
 # Generate data for two noise models
 
@@ -51,28 +73,19 @@ def f(x):
 n = 50
 a = 0
 b = 2*np.pi
+
 x_uniform, y_true_uniform, y_noisy_uniform = generate_noisy_data(f, n, a, b, uniform)
 x_gaussian, y_true_gaussian, y_noisy_gaussian = generate_noisy_data(f, n, a, b, gaussian)
 
 # Plot results
 
-# Uniform noise
-plt.subplot(1, 2, 1)
 plt.plot(x_uniform, y_true_uniform, label="True Function", color="blue", linewidth=2)
 plt.scatter(x_uniform, y_noisy_uniform, label="Noisy Data (Uniform)", color="red")
-plt.title("Uniform Noise")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.legend()
-
-# Gaussian noise
-plt.subplot(1, 2, 2)
-plt.plot(x_gaussian, y_true_gaussian, label="True Function", color="blue", linewidth=2)
 plt.scatter(x_gaussian, y_noisy_gaussian, label="Noisy Data (Gaussian)", color="green")
-plt.title("Gaussian Noise")
+plt.title("Noise Model")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.legend()
 
-plt.ion()  # Turn on interactive mode
 plt.show()
+plt.savefig("generated_noise.png")

@@ -22,8 +22,9 @@ def uniformstd(n,std_dev):
     minimum = -std_dev * np.sqrt(12) * 1/2
     error = []
     for i in range (n):
-        error.append(random.random() * (maximum - minimum) + minimum)
-
+        # centering noise at 0, range is  -(b - a)/2 to (b - a)/2 
+        error.append(random.random() * (maximum - minimum) - (maximum - minimum) / 2)
+        
     return(error)
 
 def normal(n,sigma):
