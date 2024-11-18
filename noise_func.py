@@ -10,7 +10,7 @@ def uniform(n,minimum,maximum):
 
     return(error)
 
-def gaussian(n,sigma):
+def normal(n,sigma):
     mu = 0
     error = []
     for i in range (n):
@@ -56,8 +56,8 @@ def generate_noisy_data(f, n, a, b, noise_model):
         y_noisy = y_true + noise
         return x, y_true, y_noisy
 
-    elif noise_model == gaussian:
-        noise = gaussian(n,sigma)
+    elif noise_model == normal:
+        noise = normal(n,sigma)
         y_noisy = y_true + noise
         return x, y_true, y_noisy
 
@@ -75,7 +75,7 @@ a = 0
 b = 2*np.pi
 
 x_uniform, y_true_uniform, y_noisy_uniform = generate_noisy_data(f, n, a, b, uniform)
-x_gaussian, y_true_gaussian, y_noisy_gaussian = generate_noisy_data(f, n, a, b, gaussian)
+x_gaussian, y_true_gaussian, y_noisy_gaussian = generate_noisy_data(f, n, a, b, normal)
 
 # Plot results
 

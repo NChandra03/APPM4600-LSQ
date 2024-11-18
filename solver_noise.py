@@ -65,8 +65,8 @@ def householder_qr(M, tol=1e-10):
 def back_substitution(R, y_prime, tol=1e-10):
     n = R.shape[0]
     c = np.zeros_like(y_prime, dtype=np.float64)
-    print(R)
-    print(y_prime)
+    #print(R)
+    #print(y_prime)
     for i in range(n - 1, -1, -1):
         if abs(R[i, i]) > tol:  # Only proceed if R[i, i] is not effectively zero
             c[i] = (y_prime[i] - np.dot(R[i, i+1:], c[i+1:])) / R[i, i]
