@@ -16,98 +16,85 @@ import random
 from noise_func import uniform
 from noise_func import gaussian
 from noise_func import generate_noisy_data
+from solver_noise import create_M
+from solver_noise import householder_qr
+from solver_noise import back_substitution
+
 
 def driver():
   
-  n = 50
+  N = 100
   a = 0
-  b = 2*np.pi
+  b = 10
+  n = 2
 
   # first function
   f1 = lambda x: x**5 - 3x**3 + 5x
-
   # second function
   f2 = lambda x: x*np.exp(-x**2)
   
-  x_uniform, y_true_uniform, y_noisy_uniform = generate_noisy_data(f, n, a, b, uniform)
-  x_gaussian, y_true_gaussian, y_noisy_gaussian = generate_noisy_data(f, n, a, b, gaussian)
+  # Number of points to sample in [a, b]
+  xeval = np.linspace(a, b, N + 1)
+  fex1 = f1(xeval)
+  fex2 = f2(xeval)
+  noise = normal(N + 1,0.05)
+  fex_noise1 = fex1 + noise
+  fex_noise2 = fex2 + noise
   
-  # Plot results
+  # Create design matrix M
+  M = create_M(xeval,n)
   
-  plt.plot(x_uniform, y_true_uniform, label="True Function: f(x)=sin(x)", color="blue", linewidth=2)
-  plt.scatter(x_uniform, y_noisy_uniform, label="Noisy Data (Uniform)", color="red")
-  plt.scatter(x_gaussian, y_noisy_gaussian, label="Noisy Data (Gaussian)", color="green")
-  plt.title("Noise Model")
-  plt.xlabel("x")
-  plt.ylabel("y")
+  # Perform QR decomposition
+  Q, R = householder_qr(M)
+  Qt = np.transpose(Q)
+  
+  # Project f(x) onto the column space of Q and solve for coefficients
+  y_prime1 = Qt @ fex1
+  y_prime2 = Qt @ fex2
+
+  c1 = back_substitution(R, y_prime1)
+  c2 = back_substitution(R, y_prime2)
+
+  
+  # Project f(x) onto the column space of Q and solve for coefficients
+  y_prime_noise1 = Qt @ fex_noise1
+  y_prime_noise2 = Qt @ fex_noise2
+
+  c_noise1 = back_substitution(R, y_prime_noise1)
+  c_noise2 = back_substitution(R, y_prime_noise2)
+
+  
+  # Generate polynomial values using the coefficients
+  x_poly = np.linspace(a, b, 100)
+  y_poly1 = sum(c1[i] * x_poly ** i for i in range(n + 1))
+  y_poly_noise1 = sum(c_noise1[i] * x_poly ** i for i in range(n + 1))
+  y_poly2 = sum(c2[i] * x_poly ** i for i in range(n + 1))
+  y_poly_noise2 = sum(c_noise2[i] * x_poly ** i for i in range(n + 1))
+  
+  # Plot function 1 and the polynomial approximation
+  plt.subplot(1, 2, 1)
+  plt.scatter(xeval, fex1, color='blue', label='Original function samples: f(x) = x^5 - 3x^3 + 5x')
+  plt.scatter(xeval, fex_noise1, color='green', label='Original function samples with noise')
+  plt.plot(x_poly, y_poly1, color='red', label='Polynomial approximation')
+  plt.plot(x_poly, y_poly_noise1, color='orange', label='Polynomial approximation with noise')
   plt.legend()
-  
+  plt.xlabel("x")
+  plt.ylabel("f(x) / Polynomial Approximation")
+  plt.title("Polynomial Approximation of Function f(x)=x^5-3x^3+5x")
+
+  # Plot function 2 and the polynomial approximation
+  plt.subplot(1, 2, 2)
+  plt.scatter(xeval, fex2, color='blue', label='Original function samples: f(x) = xe^(-x^2)')
+  plt.scatter(xeval, fex_noise2, color='green', label='Original function samples with noise')
+  plt.plot(x_poly, y_poly2, color='red', label='Polynomial approximation')
+  plt.plot(x_poly, y_poly_noise2, color='orange', label='Polynomial approximation with noise')
+  plt.legend()
+  plt.xlabel("x")
+  plt.ylabel("f(x) / Polynomial Approximation")
+  plt.title("Polynomial Approximation of Function f(x)=xe^(-x^2)")
+
   plt.show()
-  plt.savefig("generated_noise.png")
-  
+  plt.savefig("comparison")
 
-
-def uniform(n,minimum,maximum):
-    error = []
-    for i in range (n):
-        # centering noise at 0, range is  -(b - a)/2 to (b - a)/2 
-        error.append(random.random() * (maximum - minimum) - (maximum - minimum) / 2)
-
-    return(error)
-
-def gaussian(n,sigma):
-    mu = 0
-    error = []
-    for i in range (n):
-        error.append(np.random.normal(mu, sigma))
-
-    return(error)
-
-def generate_noisy_data(f, n, a, b, noise_model):
-    """
-    Generate noisy data based on a function f(x).
-    
-    Parameters:
-        f (function): mathematical function to evaluate
-        n (int): number of points
-        a (float): start of the interval
-        b (float): end of the interval
-        noise_model (str): type of noise ('uniform' or 'gaussian')
-        noise_scale (float): Scaling factor for noise level
-        
-    Returns:
-        x (ndarray): x-values
-        y_true (ndarray): true y-values
-        y_noisy (ndarray): noisy y-values
-    """
-  
-    x = np.linspace(a, b, n)
-    y_true = f(x)
-
-    # variance in gaussian model is sigma^2
-    # variance in uniform model is (maximum-minimum)^2/12
-    # setting these equal, we see that the maximum-minimum is equal to sqrt(12)*sigma
-    # to center the uniform noise around 0, the minimum can be written as -sqrt(12)*sigma
-    # and the maximum can be written as +sqrt(12)*sigma
-
-    sigma = 0.5
-    minimum = -np.sqrt(12) * sigma /2
-    maximum = np.sqrt(12) * sigma /2
-
-    # generate noise with reproducibility 
-    np.random.seed(42)
-    if noise_model == uniform:
-        noise = uniform(n,minimum,maximum)
-        y_noisy = y_true + noise
-        return x, y_true, y_noisy
-
-    elif noise_model == gaussian:
-        noise = gaussian(n,sigma)
-        y_noisy = y_true + noise
-        return x, y_true, y_noisy
-
-    else:
-        print("noise model not recognized")
-        return 
 
 driver()
