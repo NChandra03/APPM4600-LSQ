@@ -1,13 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
 
 def driver():
 
-    f = lambda x: x
+    f = lambda x: np.sin(x)
 
     a = 0
-    b = 5
+    b = 2*np.pi
 
     x = np.linspace(a, b, 200)
     y = f(x)
@@ -15,9 +16,10 @@ def driver():
     intercept = 0
     slope = 0.2
 
-    np.random.seed(28)
+    #np.random.seed(28)
+    np.random.seed(int(time.time()))
 
-    figure, axis = plt.subplots(3,2, figsize=(10, 30))
+    figure, axis = plt.subplots(3,2, figsize=(10, 11))
 
     axis[0,0].plot(x, y, label="True function f(x) = x")
     axis[0,0].scatter(x, y + lin_var(x, intercept, slope), label="Linear variance", color="red",s=10)
@@ -66,6 +68,8 @@ def driver():
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.5, wspace=0.3)
     plt.show()
+    plt.savefig("heteroskedastic_noise.png")
+
 
     return
 
@@ -89,7 +93,10 @@ def lin_var(x, a=1, b=1):
     #     # normal gaussian distribution centered around 0
     #     error.append(a + b*x[i]*variance)
 
-    error = a + b*x*np.random.randn(len(x))
+    error = []
+    variance = np.abs(a + b*x)
+    for i in range(len(x)):
+        error.append(np.random.normal(0,np.sqrt(variance[i])))
 
     return np.array(error)
 
@@ -112,7 +119,11 @@ def quad_var(x, a=1, b=1):
     #     variance = a + b * x[i]**2
     #     # normal gaussian distribution centered around 0
     #     error.append(np.random.normal(0, np.sqrt(variance)))
-    error = a + b*x**2*np.random.randn(len(x))
+
+    error = []
+    variance = np.abs(a + b*x**2)
+    for i in range(len(x)):
+        error.append(np.random.normal(0,np.sqrt(variance[i])))
 
     return np.array(error)
 
@@ -129,7 +140,10 @@ def exp_var(x, a=1, b=1):
     Outputs:
         error (np.array): Error to be added at each point
     '''
-    error = a * np.exp(b * x) * np.random.randn(len(x))
+    error = []
+    variance = np.abs(a + np.exp(b*x))
+    for i in range(len(x)):
+        error.append(np.random.normal(0,np.sqrt(variance[i])))
 
     return np.array(error)    
 
