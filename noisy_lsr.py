@@ -80,8 +80,8 @@ def driver():
   plt.legend()
   plt.xlabel("x")
   plt.ylabel("f(x) / Polynomial Approximation")
-  plt.title("Polynomial Approximation of Function f(x)=x^5-3x^3+5x")
-
+  plt.title(f"Polynomial Approximation of Function f(x)=x^5-3x^3+5x, (n={n})")
+    
   # Plot function 2 and the polynomial approximation
   plt.subplot(1, 2, 2)
   plt.scatter(xeval, fex2, color='blue', label='Original function samples: f(x) = xe^(-x^2)')
@@ -91,10 +91,9 @@ def driver():
   plt.legend()
   plt.xlabel("x")
   plt.ylabel("f(x) / Polynomial Approximation")
-  plt.title("Polynomial Approximation of Function f(x)=xe^(-x^2)")
-
+  plt.title(f"Polynomial Approximation of Function f(x)=xe^(-x^2), (n={n})")
+  
   plt.show()
-  plt.savefig("comparison")
-
+  plt.savefig("comparison.png")
 
 driver()
