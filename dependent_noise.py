@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import time
+import time 
 
 def driver():
 
-    f = lambda x: np.sin(x)
+    f = lambda x: x
 
     a = 0
     b = 2*np.pi

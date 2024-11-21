@@ -20,7 +20,7 @@ def driver():
   N = 100
   # Interval of interest
   a = 0
-  b = 10
+  b = 2
   # Polynomial degrees to consider
   degrees = [2, 3, 4, 5]
 
@@ -98,7 +98,7 @@ def driver():
   plt.figure()
 
   # Choose order for noise level analysis
-  n = 3
+  n = 5
   noise_levels = [0.05, 0.1, 0.2, 0.3]
   M = create_M(xeval, n)
   # Perform QR decomposition
