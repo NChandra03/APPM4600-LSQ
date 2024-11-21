@@ -16,7 +16,6 @@ def driver():
     intercept = 0
     slope = 0.2
 
-    #np.random.seed(28)
     np.random.seed(int(time.time()))
 
     figure, axis = plt.subplots(3,2, figsize=(10, 11))
@@ -42,8 +41,6 @@ def driver():
     axis[1,0].set_ylabel("y")
     axis[1,0].legend()
 
-        
-
     axis[1,1].plot(x, y, label="True function f(x) = x")
     axis[1,1].scatter(x, y + quad_var(y, intercept, slope), label="Quadratic variance", color="green",s=10)
     axis[1,1].set_title("Quadratic Variance Dependent on Output")
@@ -68,7 +65,7 @@ def driver():
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.5, wspace=0.3)
     plt.show()
-    plt.savefig("heteroskedastic_noise.png")
+    # plt.savefig("heteroskedastic_noise.png")
 
 
     return
@@ -77,7 +74,7 @@ def driver():
 def lin_var(x, a=1, b=1):
     '''
     Generate error with a linear dependence on variance 
-    error = a + bxi*variance
+    variance = a + b*xi
 
     Inputs: 
         x (np.array): Array of points for variance to be dependent on (can be x values or y values)
@@ -87,11 +84,6 @@ def lin_var(x, a=1, b=1):
     Outputs:
         error (np.array): Error to be added at each point
     '''
-    # error = []
-    # for i in range(len(x)):
-    #     variance = np.random.randn()
-    #     # normal gaussian distribution centered around 0
-    #     error.append(a + b*x[i]*variance)
 
     error = []
     variance = np.abs(a + b*x)
@@ -104,7 +96,7 @@ def lin_var(x, a=1, b=1):
 def quad_var(x, a=1, b=1):
     '''
     Generate error with a quadratic dependence on variance 
-    sigma(xi) = a + bxi^2
+    variance = a + bxi^2
 
     Inputs: 
         x (np.array): Array of points for variance to be dependent on (can be x values or y values)
@@ -114,12 +106,6 @@ def quad_var(x, a=1, b=1):
     Outputs:
         error (np.array): Error to be added at each point
     '''
-    # error = []
-    # for i in range(len(x)):
-    #     variance = a + b * x[i]**2
-    #     # normal gaussian distribution centered around 0
-    #     error.append(np.random.normal(0, np.sqrt(variance)))
-
     error = []
     variance = np.abs(a + b*x**2)
     for i in range(len(x)):
@@ -130,7 +116,7 @@ def quad_var(x, a=1, b=1):
 def exp_var(x, a=1, b=1):
     '''
     Generate error with an exponential dependence on variance 
-    a * e^(b * x) * variance
+    variance = a*e^(b*xi)
 
     Inputs: 
         x (np.array): Array of points for variance to be dependent on (can be x values or y values)
@@ -141,7 +127,7 @@ def exp_var(x, a=1, b=1):
         error (np.array): Error to be added at each point
     '''
     error = []
-    variance = np.abs(a + np.exp(b*x))
+    variance = np.abs(a * np.exp(b*x))
     for i in range(len(x)):
         error.append(np.random.normal(0,np.sqrt(variance[i])))
 

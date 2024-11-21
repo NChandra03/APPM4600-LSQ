@@ -20,13 +20,16 @@ def driver():
   N = 100
   # Interval of interest
   a = 0
-  b = 2
+  b = 2*np.pi
   # Polynomial degrees to consider
   degrees = [2, 3, 4, 5]
 
   # Functions to approximate
-  f1 = lambda x: x**5 - 3*x**3 + 5*x 
-  f2 = lambda x: x * np.exp(-x**2)
+  #f1 = lambda x: x**5 - 3*x**3 + 5*x 
+  #f2 = lambda x: x*np.exp(-x**2)
+
+  f1 = lambda x: np.sin(x)
+  f2 = lambda x: np.cos(x)
 
   # Sample points
   xeval = np.linspace(a, b, N + 1)
