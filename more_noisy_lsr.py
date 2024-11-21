@@ -30,7 +30,7 @@ def driver():
 
   # Sample points
   xeval = np.linspace(a, b, N + 1)
-  xnoise = normal(N + 1, 0.5)
+  xnoise = normal(N + 1, 0.05)
   xeval_noisy = xeval+xnoise
 
   fex1 = f1(xeval)
@@ -73,34 +73,34 @@ def driver():
 
     # Plot for Function 1
     axes[i, 0].plot(xeval, fex1, color='black', label=r'Original: $f(x) = x^5 - 3x^3 + 5x$')
+    #axes[i, 0].plot(xeval_noisy, fex1, color='blue', label='Noisy x data')
     #axes[i, 0].plot(xeval, fex_noise1, color='green', label='Noisy y data')
-    #axes[i, 0].plot(xeval_noisy, fex1, color='red', label='Noisy x data')
     #axes[i, 0].plot(xeval_noisy, fex_noise1, color='orange', label='Noisy x & y data')
     axes[i, 0].scatter(x_poly, y_poly1, color='red', label=f'Polynomial (deg {n})')
-    axes[i, 0].scatter(x_poly_noise, y_poly1, color='green', label='Polynomial with x noise')
-    axes[i, 0].scatter(x_poly, y_poly_noise1, color='orange', label='Polynomial with y noise')
-    axes[i, 0].scatter(x_poly_noise, y_poly_noise1, color='blue', label='Polynomial with x and y noise')
+    axes[i, 0].scatter(x_poly_noise, y_poly1, color='blue', label='Polynomial with x noise')
+    axes[i, 0].scatter(x_poly, y_poly_noise1, color='green', label='Polynomial with y noise')
+    axes[i, 0].scatter(x_poly_noise, y_poly_noise1, color='orange', label='Polynomial with x and y noise')
     axes[i, 0].set_yscale('log')
     axes[i, 0].legend()
     axes[i, 0].set_xlabel("x")
     axes[i, 0].set_ylabel("f(x) / Polynomial Approximation")
-    axes[i, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with degree " + f"{n}" + " polynomial approx")
+    axes[i, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with Degree " + f"{n}" + " Polynomial Approximation")
 
 
     # Plot for Function 2
     axes[i, 1].plot(xeval, fex2, color='black', label=r'Original: $f(x) = xe^{-x^2}$')
-    #axes[i, 1].plot(xeval_noisy, fex2, color='red', label='Noisy x data')
+    #axes[i, 1].plot(xeval_noisy, fex2, color='blue', label='Noisy x data')
     #axes[i, 1].plot(xeval, fex_noise2, color='green', label='Noisy y data')
     #axes[i, 1].plot(xeval_noisy, fex_noise2, color='orange', label='Noisy x & y data')
     axes[i, 1].scatter(x_poly, y_poly2, color='red', label=f'Polynomial (deg {n})')
-    axes[i, 1].scatter(x_poly_noise, y_poly2, color='green', label=f'Polynomial with x noise')
-    axes[i, 1].scatter(x_poly, y_poly_noise2, color='orange', label=f'Polynomial with y noise')
-    axes[i, 1].scatter(x_poly_noise, y_poly_noise2, color='blue', label=f'Polynomial with x and y noise')
+    axes[i, 1].scatter(x_poly_noise, y_poly2, color='blue', label=f'Polynomial with x noise')
+    axes[i, 1].scatter(x_poly, y_poly_noise2, color='green', label=f'Polynomial with y noise')
+    axes[i, 1].scatter(x_poly_noise, y_poly_noise2, color='orange', label=f'Polynomial with x and y noise')
     axes[i, 1].legend()
     axes[i, 1].set_xlabel("x")
     axes[i, 1].set_ylabel("f(x) / Polynomial Approximation")
     axes[i, 1].set_title(f"Function 2: Degree {n}")
-    axes[i, 1].set_title(r"$f(x) = x e^{-x^2}$ with degree " + f"{n}" + " polynomial approx")
+    axes[i, 1].set_title(r"$f(x) = x e^{-x^2}$ with Degree " + f"{n}" + " Polynomial Approximation")
 
   plt.tight_layout()
   plt.savefig("xnoise_compare_degree.png", dpi=300)
@@ -149,13 +149,13 @@ def driver():
 
     # Plot for Function 1
     axes[idx, 0].plot(xeval, fex1, color='black', label=r'Original: $f(x) = x^5 - 3x^3 + 5x$')
-    #axes[idx, 0].plot(xeval_noisy, fex1, color='red', label=f'Noisy x data (sigma={sigma})')
+    #axes[idx, 0].plot(xeval_noisy, fex1, color='blue', label=f'Noisy x data (sigma={sigma})')
     #axes[idx, 0].plot(xeval, fex_noise1, color='green', label=f'Noisy y data (sigma={sigma})')
     #axes[idx, 0].plot(xeval_noisy, fex_noise1, color='orange', label=f'Noisy x & y data (sigma={sigma})')
     axes[idx, 0].scatter(x_poly, y_poly1, color='red', label=f'Polynomial (deg {n})')
-    axes[idx, 0].scatter(x_poly_noise, y_poly1, color='green', label='Poly with x noise')
-    axes[idx, 0].scatter(x_poly, y_poly_noise1, color='orange', label='Poly with y noise')
-    axes[idx, 0].scatter(x_poly_noise, y_poly_noise1, color='blue', label='Poly with x & y noise')
+    axes[idx, 0].scatter(x_poly_noise, y_poly1, color='blue', label='Poly with x noise')
+    axes[idx, 0].scatter(x_poly, y_poly_noise1, color='green', label='Poly with y noise')
+    axes[idx, 0].scatter(x_poly_noise, y_poly_noise1, color='orange', label='Poly with x & y noise')
     axes[idx, 0].set_yscale('log')
     axes[idx, 0].legend()
     axes[idx, 0].set_xlabel("x")
@@ -164,13 +164,13 @@ def driver():
 
     # Plot for Function 2
     axes[idx, 1].plot(xeval, fex2, color='black', label=r'Original: $f(x) = x e^{-x^2}$')
-    #axes[idx, 1].plot(xeval_noisy, fex2, color='red', label=f'Noisy x data (sigma={sigma})')
+    #axes[idx, 1].plot(xeval_noisy, fex2, color='blue', label=f'Noisy x data (sigma={sigma})')
     #axes[idx, 1].plot(xeval, fex_noise2, color='green', label=f'Noisy y data (sigma={sigma})')
     #axes[idx, 1].plot(xeval_noisy, fex_noise2, color='orange', label=f'Noisy x & y data (sigma={sigma})')
     axes[idx, 1].scatter(x_poly, y_poly2, color='red', label=f'Polynomial (deg {n})')
-    axes[idx, 1].scatter(x_poly_noise, y_poly2, color='green', label='Poly with x noise')
-    axes[idx, 1].scatter(x_poly, y_poly_noise2, color='orange', label='Poly with y noise')
-    axes[idx, 1].scatter(x_poly_noise, y_poly_noise2, color='blue', label='Poly with x & y noise')
+    axes[idx, 1].scatter(x_poly_noise, y_poly2, color='blue', label='Poly with x noise')
+    axes[idx, 1].scatter(x_poly, y_poly_noise2, color='green', label='Poly with y noise')
+    axes[idx, 1].scatter(x_poly_noise, y_poly_noise2, color='orange', label='Poly with x & y noise')
     axes[idx, 1].legend()
     axes[idx, 1].set_xlabel("x")
     axes[idx, 1].set_ylabel("f(x) / Polynomial Approximation")
