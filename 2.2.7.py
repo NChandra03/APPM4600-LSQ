@@ -132,5 +132,7 @@ def driver():
     plt.title("Polynomial Approximation of Function")
     plt.yscale('log')
     plt.show()
+    plt.savefig('test.png')
+
 
 driver()
