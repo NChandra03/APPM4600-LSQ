@@ -16,7 +16,7 @@ def driver():
     # fixed polynomial degree to balance fit accuracy and and noise robustness 
     degree = 10
     # noise levels to test
-    noise_levels = [0.05, 0.1, 0.2, 0.3]
+    noise_levels = [0.01, 0.02, 0.03, 0.05]
 
     # function to approximate
     f = lambda x: x*np.exp(-x**2)
@@ -36,49 +36,50 @@ def driver():
 
     # build matrix with observations
     M = create_M(x_obs, degree)
-  
-    # perform QR decomposition on the observation matrix
     Q,R = householder_qr(M)
-    Q = np.transpose(Q)
+    Qt = np.transpose(Q)
 
     # solve for noiseless approximation
-    y_obs_noiseless = Q @ f_obs
+    y_obs_noiseless = Qt @ f_obs
     c_noiseless = back_substitution(R, y_obs_noiseless)
     # evaluate polynomial approx on test interval 
-    y_test_noiseless = sum(c_noiseless[i] * x_test ** i for i in range(degree + 1)) 
+    y_noiseless = sum(c_noiseless[i] * x_full ** i for i in range(degree + 1)) 
 
     fig, axes = plt.subplots(len(noise_levels), 1, figsize=(10, len(noise_levels) * 4))
 
     for idx, sigma in enumerate(noise_levels):
         # add noise to observations
         noise = normal(N + 1, sigma)
-        f_obs_noisy = f_obs + noise
-        x_test_noisy = x_test + noise
-
+        f_obs_noisy_y = f_obs + noise
         x_obs_noisy = x_obs + noise 
+        f_obs_noisy_x = f(x_obs_noisy)
 
-        # now solve for noisy approximation 
-        y_obs_noisy = Q @ f_obs_noisy
-        c_noisy = back_substitution(R, y_obs_noisy)
-        y_test_noisy = sum(c_noisy[i] * x_test ** i for i in range(degree + 1))
+        # noisy input approx
+        Mnoisy = create_M(x_obs_noisy, degree)
+        Qnoisy, Rnoisy = householder_qr(Mnoisy)
+        Qtnoisy = np.transpose(Qnoisy)
+        y_obs_noisy_x = Qtnoisy @ f_obs_noisy_x
+        c_noisy_x = back_substitution(R, y_obs_noisy_x)
+        y_poly_noise1_x = sum(c_noisy_x[i] * x_full ** i for i in range(degree + 1))
+
+        # noisy output approx
+        y_obs_noisy_y = Qt @ f_obs_noisy_y
+        c_noisy_y = back_substitution(R, y_obs_noisy_y)
+        y_poly_noise1_y = sum(c_noisy_y[i] * x_full ** i for i in range(degree + 1))
+
+
 
         # plot true function on full interval
-        axes[idx].plot(x_full, f_full, color='black', label='Original Function')
+        axes[idx].plot(x_full, f_full, color='black', label='True function $f(x) = x e^{-x^2}$')
+        #axes[idx].scatter(x_obs, f_obs, color='blue', label='Function samples')
+        #axes[idx].scatter(x_obs, f_obs_noisy_x, color='green', label='Function samples with noise in x')
+        #axes[idx].scatter(x_obs, f_obs_noisy_y, color='purple', label='Function samples with noise in y')
 
         # plot observation points
-        
-        axes[idx].plot(x_obs, y_test_noiseless, color='red', alpha=0.5, label='Noiseless Approximation')
-        axes[idx].plot(x_obs_noisy, y_test_noiseless, color='green', linestyle='--', alpha=0.5, label=f'Noisy x Approximation (σ={sigma})')
-        axes[idx].plot(x_obs, y_test_noisy, color='blue', linestyle='--', alpha=0.5, label=f'Noisy y Approximation (σ={sigma})')
-        axes[idx].plot(x_obs_noisy, y_test_noisy, color='orange', linestyle='--', alpha=0.5, label=f'Noisy x & y Approximation (σ={sigma})')
-        
-        # plot test points 
-        '''
-        axes[idx].plot(x_test, y_test_noiseless, color='red', label='Noiseless Approximation')
-        axes[idx].plot(x_test_noisy, y_test_noiseless, color='green', linestyle='--', label=f'Noisy x Approximation (σ={sigma})')
-        axes[idx].plot(x_test, y_test_noisy, color='blue', linestyle='--', label=f'Noisy y Approximation (σ={sigma})')
-        axes[idx].plot(x_test_noisy, y_test_noisy, color='orange', linestyle='--', label=f'Noisy x & y Approximation (σ={sigma})')
-        '''
+        axes[idx].plot(x_full, y_noiseless, color='red', alpha=0.5, label='Noiseless Approximation')
+        axes[idx].plot(x_full, y_poly_noise1_x, color='green', linestyle='--', alpha=0.5, label=f'Noisy x approximation (σ={sigma})')
+        axes[idx].plot(x_full, y_poly_noise1_y, color='orange', linestyle='--', alpha=0.5, label=f'Noisy y approximation (σ={sigma})')
+
 
         axes[idx].set_xlabel("x")
         axes[idx].set_ylabel("f(x) / Polynomial Approximation")
