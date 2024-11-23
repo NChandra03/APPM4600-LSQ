@@ -93,66 +93,125 @@ def var_weights(y, min_var=1e-8, max_weight=1e8):
     weights = np.array([
         1 / v**2 if v > min_var else max_weight for v in variance
     ])
-    print("list of variance: ", variance)
-    print()
+    #print("list of variance: ", variance)
+    #print("list of weights:", weights)
 
-    print("list of weights:", weights)
+    return np.array(error), weights, variance
 
-    return np.array(error), weights
 
 def driver():
     np.random.seed(28)
 
     # Function to approximate
-    f = lambda x: x**5 - 3*x**3 + 5*x
-    
+    # Functions to approximate
+    f1 = lambda x: x**5 - 3*x**3 + 5*x 
+    f2 = lambda x: x*np.exp(-x**2)
+
     # Interval of interest
     a, b = 0, 2
     # Order of approximation
-    n = 5
+    degrees = [1,3,5]
+
     # Number of points to sample in [a, b]
     N = 100
     xeval = np.linspace(a, b, N + 1)
-    fex = f(xeval)
+    fex1 = f1(xeval)
+    fex2 = f2(xeval)
     
     # Generate noise based on y
-    error, weights = var_weights(fex)
-    # print("list of weights: ", weights)
-    noisy_fex = fex + error
+    error1, weights1, variance1 = var_weights(fex1)
+    error2, weights2, variance2 = var_weights(fex2)
+    noisy_fex1 = fex1 + error1
+    noisy_fex2 = fex2 + error2
 
-    # Create design matrix M
-    M = create_M(xeval, n)
-    W = np.diag(weights)  # Create diagonal weight matrix
-    D = np.diag(np.sqrt(weights)) # Create D
-    Mp = D @ M   # Weight the design matrix
-    fp = D @ noisy_fex  # Weight the function values
+    fig, axes = plt.subplots(len(degrees), 2, figsize=(12, len(degrees) * 4))
 
-    # Perform weighted QR decomposition
-    Qw, Rw = householder_qr(Mp)
-    Qtw = np.transpose(Qw)
 
-    # Perform QR decomposition
-    Q, R = householder_qr(M)
-    Qt = np.transpose(Q)
+    for i, n in enumerate(degrees):
+   
+        # Create design matrix M
+        M = create_M(xeval, n)
+        W1 = np.diag(weights1)  # Create diagonal weight matrix
+        W2 = np.diag(weights2)  # Create diagonal weight matrix
+        D1 = np.diag(np.sqrt(weights1)) # Create D
+        D2 = np.diag(np.sqrt(weights2)) # Create D
+        Mp1 = D1 @ M   # Weight the design matrix
+        Mp2 = D2 @ M   # Weight the design matrix
+        fp1 = D1 @ noisy_fex1  # Weight the function values
+        fp2 = D2 @ noisy_fex2  # Weight the function values
 
-    # Project f(x) onto the weighted column space of Q and solve for coefficients
-    y_primew = Qtw @ fp
-    cw = back_substitution(Rw, y_primew)
+        # Perform weighted QR decomposition
+        Qw1, Rw1 = householder_qr(Mp1)
+        Qw2, Rw2 = householder_qr(Mp2)
+        Qtw1 = np.transpose(Qw1)
+        Qtw2 = np.transpose(Qw2)
 
-    # Project f(x) onto the column space of Q and solve for coefficients
-    y_prime = Qt @ noisy_fex
-    c = back_substitution(R, y_prime)
+        # Perform QR decomposition
+        Q, R = householder_qr(M)
+        Qt = np.transpose(Q)
 
-    # Generate weighted polynomial values using the coefficients
-    x_poly = np.linspace(a, b, 100)
-    y_polyw = sum(cw[i] * x_poly ** i for i in range(n + 1))
+        # Project f(x) onto the weighted column space of Q and solve for coefficients
+        y_primew1 = Qtw1 @ fp1
+        y_primew2 = Qtw2 @ fp2
+        cw1 = back_substitution(Rw1, y_primew1)
+        cw2 = back_substitution(Rw2, y_primew2)
 
-    # Generate polynomial values using the coefficients
-    y_poly = sum(c[i] * x_poly ** i for i in range(n + 1))
+        # Project f(x) onto the column space of Q and solve for coefficients
+        y_prime1 = Qt @ noisy_fex1
+        y_prime2 = Qt @ noisy_fex2
+        c1 = back_substitution(R, y_prime1)
+        c2 = back_substitution(R, y_prime2)
 
-    # Plot original function, noisy samples, and polynomial approximation
-    fig, axes = plt.subplots(1,2)
+        # Generate weighted polynomial values using the coefficients
+        x_poly = np.linspace(a, b, 100)
+        y_polyw1 = sum(cw1[i] * x_poly ** i for i in range(n + 1))
+        y_polyw2 = sum(cw2[i] * x_poly ** i for i in range(n + 1))
 
+        # Generate polynomial values using the coefficients
+        y_poly1 = sum(c1[i] * x_poly ** i for i in range(n + 1))
+        y_poly2 = sum(c2[i] * x_poly ** i for i in range(n + 1))
+
+        #for i in range(100):
+            #print('variance: ', variance[i], ', weight: ' , weights[i], ', approximation unweighted: ', y_poly[i], ', approximation weighted: ' , y_polyw[i], 'true value: ', f(i))
+
+
+        # Plot for Function 1
+        axes[i,0].scatter(xeval, noisy_fex1, color='blue', alpha=0.3, label='Noisy function samples')
+        axes[i,0].plot(x_poly, y_poly1, color='orange', label='Unweighted polynomial approximation')
+        axes[i,0].plot(x_poly, y_polyw1, color='red', label='Weighted Polynomial Approximation')
+        axes[i,0].plot(x_poly, f1(x_poly), color='green', linestyle='--', label='True Function')
+        #axes[i, 0].set_yscale('log')
+        axes[i, 0].legend()
+        axes[i, 0].set_xlabel("x")
+        axes[i, 0].set_ylabel("f(x) / Polynomial Approximation")
+        axes[i, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with Degree " + f"{n}" + " Polynomial Approximation")
+
+        # Plot for Function 2
+        axes[i, 1].scatter(xeval, noisy_fex2, color='blue', alpha=0.3, label='Noisy function samples')
+        axes[i, 1].plot(x_poly, y_poly2, color='orange', label='Unweighted polynomial approximation')
+        axes[i, 1].plot(x_poly, y_polyw2, color='red', label='Weighted Polynomial Approximation')
+        axes[i, 1].plot(x_poly, f2(x_poly), color='green', linestyle='--', label='True Function')
+        axes[i, 1].legend()
+        axes[i, 1].set_xlabel("x")
+        axes[i, 1].set_ylabel("f(x) / Polynomial Approximation")
+        axes[i, 1].set_title(f"Function 2: Degree {n}")
+        axes[i, 1].set_title(r"$f(x) = x e^{-x^2}$ with Degree " + f"{n}" + " Polynomial Approximation")
+
+    plt.tight_layout()
+    plt.show()
+    plt.savefig("weighted.png", dpi=300)
+    '''
+
+    plt.scatter(xeval, noisy_fex, color='blue', alpha=0.3, label='Noisy function samples')
+    plt.plot(x_poly, y_poly, color='orange', label='Unweighted polynomial approximation')
+    plt.plot(x_poly, y_polyw, color='red', label='Weighted Polynomial Approximation')
+    plt.plot(x_poly, f(x_poly), color='green', linestyle='--', label='True Function')
+    plt.legend()
+    plt.xlabel("x")
+    plt.ylabel("f(x) / Polynomial Approximation")
+    plt.title("Weighted Polynomial Approximation of x^5 - 3x^3 + 5x")
+
+    
     axes[0].scatter(xeval, noisy_fex, color='blue', label='Noisy function samples')
     axes[0].plot(x_poly, y_polyw, color='red', label='Weighted Polynomial Approximation')
     axes[0].plot(x_poly, f(x_poly), color='green', linestyle='--', label='True Function')
@@ -170,6 +229,10 @@ def driver():
     axes[1].set_ylabel("f(x) / Polynomial Approximation")
     axes[1].set_title("Polynomial Approximation of x^5 - 3x^3 + 5x")
 
+
     plt.show()
+    plt.savefig('weighted.png')
+    '''
+
 
 driver()
