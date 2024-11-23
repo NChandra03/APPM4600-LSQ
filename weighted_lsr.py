@@ -121,6 +121,11 @@ def driver():
     # Generate noise based on y
     error1, weights1, variance1 = var_weights(fex1)
     error2, weights2, variance2 = var_weights(fex2)
+
+    # adjust endpoint weights
+    #weights1[-3:] = [1e6, 1e6, 1e6]
+    #weights2[-3:] = [1e6, 1e6, 1e6]
+
     noisy_fex1 = fex1 + error1
     noisy_fex2 = fex2 + error2
 
