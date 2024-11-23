@@ -75,8 +75,8 @@ def driver():
 
         # plot observation points
         axes[idx].plot(x_full, y_noiseless, color='red', linestyle='--', label='Noiseless Approximation')
-        axes[idx].plot(x_full, y_poly_noise1_x, color='green', linestyle='--', alpha=0.5, label=f'Noisy x approximation (σ={sigma})')
-        axes[idx].plot(x_full, y_poly_noise1_y, color='orange', linestyle='--', alpha=0.5, label=f'Noisy y approximation (σ={sigma})')
+        axes[idx].plot(x_full, y_poly_noise1_x, color='green', linestyle='--', alpha=0.5, label='Noisy x approximation')
+        axes[idx].plot(x_full, y_poly_noise1_y, color='orange', linestyle='--', alpha=0.5, label='Noisy y approximation')
         axes[idx].set_xlabel("x")
         axes[idx].set_ylabel("f(x) / Polynomial Approximation")
         axes[idx].set_title(f"Test Interval [1, 2] - Noise Level σ={sigma}")
