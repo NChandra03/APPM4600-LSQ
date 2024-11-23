@@ -119,16 +119,31 @@ def driver():
     fex2 = f2(xeval)
     
     # Generate noise based on y
-    error, weights = var_weights(fex)
-    # print("list of weights: ", weights)
-    noisy_fex = fex + error
+    error1, weights1, variance1 = var_weights(fex1)
+    error2, weights2, variance2 = var_weights(fex2)
 
-    # Create design matrix M
-    M = create_M(xeval, n)
-    W = np.diag(weights)  # Create diagonal weight matrix
-    D = np.diag(np.sqrt(weights)) # Create D
-    Mp = D @ M   # Weight the design matrix
-    fp = D @ noisy_fex  # Weight the function values
+    # adjust endpoint weights
+    #weights1[-3:] = [1e6, 1e6, 1e6]
+    #weights2[-3:] = [1e6, 1e6, 1e6]
+
+    noisy_fex1 = fex1 + error1
+    noisy_fex2 = fex2 + error2
+
+    fig, axes = plt.subplots(len(degrees), 2, figsize=(12, len(degrees) * 4))
+
+
+    for i, n in enumerate(degrees):
+   
+        # Create design matrix M
+        M = create_M(xeval, n)
+        W1 = np.diag(weights1)  # Create diagonal weight matrix
+        W2 = np.diag(weights2)  # Create diagonal weight matrix
+        D1 = np.diag(np.sqrt(weights1)) # Create D
+        D2 = np.diag(np.sqrt(weights2)) # Create D
+        Mp1 = D1 @ M   # Weight the design matrix
+        Mp2 = D2 @ M   # Weight the design matrix
+        fp1 = D1 @ noisy_fex1  # Weight the function values
+        fp2 = D2 @ noisy_fex2  # Weight the function values
 
         # Perform weighted QR decomposition
         Qw1, Rw1 = householder_qr(Mp1)
