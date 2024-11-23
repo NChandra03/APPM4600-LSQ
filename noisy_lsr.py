@@ -20,7 +20,7 @@ def driver():
   N = 100
   # Interval of interest
   a = 0
-  b = 10
+  b = 2
   # Polynomial degrees to consider
   degrees = [2, 3, 4, 5]
 
@@ -68,27 +68,27 @@ def driver():
     y_poly_noise2 = sum(c_noise2[i] * x_poly ** i for i in range(n + 1))
 
     # Plot for Function 1
-    axes[i, 0].plot(xeval, fex1, color='blue', label=r'Original: $f(x) = x^5 - 3x^3 + 5x$')
-    axes[i, 0].plot(xeval, fex_noise1, color='green', label='Noisy data')
-    axes[i, 0].scatter(x_poly, y_poly1, color='red', label=f'Polynomial (deg {n})')
-    axes[i, 0].scatter(x_poly, y_poly_noise1, color='orange', label='Polynomial with noise')
+    axes[i, 0].scatter(xeval, fex1, color='black', label='Original data')
+    axes[i, 0].scatter(xeval, fex_noise1, color='red', label='Noisy data')
+    axes[i, 0].plot(x_poly, y_poly1, color='green', label='LSR approximation of original data')
+    axes[i, 0].plot(x_poly, y_poly_noise1, color='orange', label='LSR approximation of noisy data')
     axes[i, 0].set_yscale('log')
     axes[i, 0].legend()
     axes[i, 0].set_xlabel("x")
     axes[i, 0].set_ylabel("f(x) / Polynomial Approximation")
-    axes[i, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with degree " + f"{n}" + " polynomial approx")
+    axes[i, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with Degree " + f"{n}" + " Polynomial Approximation")
 
 
     # Plot for Function 2
-    axes[i, 1].plot(xeval, fex2, color='blue', label=r'Original: $f(x) = xe^{-x^2}$')
-    axes[i, 1].plot(xeval, fex_noise2, color='green', label='Noisy data')
-    axes[i, 1].scatter(x_poly, y_poly2, color='red', label=f'Polynomial (deg {n})')
-    axes[i, 1].scatter(x_poly, y_poly_noise2, color='orange', label='Polynomial with noise')
+    axes[i, 1].scatter(xeval, fex2, color='black', label='Original data')
+    axes[i, 1].scatter(xeval, fex_noise2, color='red', label='Noisy data')
+    axes[i, 1].plot(x_poly, y_poly2, color='green', label='LSR approximation of original data')
+    axes[i, 1].plot(x_poly, y_poly_noise2, color='orange', label='LSR approximation of noisy data')
     axes[i, 1].legend()
     axes[i, 1].set_xlabel("x")
     axes[i, 1].set_ylabel("f(x) / Polynomial Approximation")
     axes[i, 1].set_title(f"Function 2: Degree {n}")
-    axes[i, 1].set_title(r"$f(x) = x e^{-x^2}$ with degree " + f"{n}" + " polynomial approx")
+    axes[i, 1].set_title(r"$f(x) = x e^{-x^2}$ with Degree " + f"{n}" + " Polynomial Approximation")
 
 
   # Adjust layout for better visibility
@@ -98,7 +98,7 @@ def driver():
   plt.figure()
 
   # Choose order for noise level analysis
-  n = 3
+  n = 5
   noise_levels = [0.05, 0.1, 0.2, 0.3]
   M = create_M(xeval, n)
   # Perform QR decomposition
@@ -133,10 +133,10 @@ def driver():
     y_poly_noise2 = sum(c_noise2[i] * x_poly ** i for i in range(n + 1))
 
     # Plot for Function 1
-    axes[idx, 0].plot(xeval, fex1, color='blue', label=r'Original: $f(x) = x^5 - 3x^3 + 5x$')
-    axes[idx, 0].plot(xeval, fex_noise1, color='green', label=f'Noisy data (sigma={sigma})')
-    axes[idx, 0].scatter(x_poly, y_poly1, color='red', label=f'Polynomial (deg {n})')
-    axes[idx, 0].scatter(x_poly, y_poly_noise1, color='orange', label='Poly with noise')
+    axes[idx, 0].scatter(xeval, fex1, color='black', label='Original data')
+    axes[idx, 0].scatter(xeval, fex_noise1, color='red', label='Noisy data')
+    axes[idx, 0].plot(x_poly, y_poly1, color='green', label='LSR approximation of original data')
+    axes[idx, 0].plot(x_poly, y_poly_noise1, color='orange', label='LSR approximation of noisy data')
     axes[idx, 0].set_yscale('log')
     axes[idx, 0].legend()
     axes[idx, 0].set_xlabel("x")
@@ -144,10 +144,10 @@ def driver():
     axes[idx, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with Noise Level " + f"{sigma}")
 
     # Plot for Function 2
-    axes[idx, 1].plot(xeval, fex2, color='blue', label=r'Original: $f(x) = x e^{-x^2}$')
-    axes[idx, 1].plot(xeval, fex_noise2, color='green', label=f'Noisy data (sigma={sigma})')
-    axes[idx, 1].scatter(x_poly, y_poly2, color='red', label=f'Polynomial (deg {n})')
-    axes[idx, 1].scatter(x_poly, y_poly_noise2, color='orange', label='Poly with noise')
+    axes[idx, 1].scatter(xeval, fex2, color='black', label='Original data')
+    axes[idx, 1].scatter(xeval, fex_noise2, color='red', label='Noisy data')
+    axes[idx, 1].plot(x_poly, y_poly2, color='green', label=f'LSR approximation of original data')
+    axes[idx, 1].plot(x_poly, y_poly_noise2, color='orange', label='LSR approximation of noisy data')
     axes[idx, 1].legend()
     axes[idx, 1].set_xlabel("x")
     axes[idx, 1].set_ylabel("f(x) / Polynomial Approximation")
