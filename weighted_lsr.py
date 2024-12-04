@@ -84,7 +84,7 @@ def var_weights(y, min_var=1e-8, max_weight=1e8):
     '''
 
     error = []
-    variance = np.abs(y)
+    variance = 100 * np.abs(y)
     for i in range(len(y)):
         error.append(np.random.normal(0,np.sqrt(variance[i])))  
 
