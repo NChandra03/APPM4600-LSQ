@@ -4,22 +4,22 @@ from noise_func import uniform, normal, generate_noisy_data
 from solver_noise import create_M, householder_qr, back_substitution
 
 def driver():
-  # Number of points to sample
+  # number of points to sample
   N = 100
-  # Interval of interest
+  # interval of interest
   a = 0
   b = 2
 
-  # Functions to approximate
+  # functions to approximate
   f1 = lambda x: x**5 - 3*x**3 + 5*x
   f2 = lambda x: x * np.exp(-x**2)
 
-  # Sample points
+  # sample points
   xeval = np.linspace(a, b, N + 1)
   fex1 = f1(xeval)
   fex2 = f2(xeval)
 
-  # Choose order for noise level analysis
+  # choose order for noise level analysis
   n = 5
   noise_levels = [0.05, 0.1, 0.2, 0.3]
 
@@ -28,7 +28,7 @@ def driver():
   Q, R = householder_qr(M)
   Qt = np.transpose(Q)
 
-  # Solve for coefficients (noise-free)
+  # solve for coefficients (noise-free)
   y_prime1 = Qt @ fex1
   y_prime2 = Qt @ fex2
   c1 = back_substitution(R, y_prime1)
@@ -74,7 +74,6 @@ def driver():
     y_poly_noise2 = sum(c_noise2[i] * x_poly ** i for i in range(n + 1))
     y_poly_smooth1 = sum(c_smooth1[i] * x_poly ** i for i in range(n + 1))
     y_poly_smooth2 = sum(c_smooth2[i] * x_poly ** i for i in range(n + 1))
-
 
     # function 1
     axes[idx, 0].scatter(xeval, fex1, color='black', label='Original data')
