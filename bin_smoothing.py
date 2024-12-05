@@ -101,7 +101,7 @@ def driver():
     axes[idx, 1].set_title(r"$f(x) = x e^{-x^2}$ with Noise Level " + f"{sigma}")
 
   plt.tight_layout()
-  plt.savefig("smooth_compare_noise_levels.png", dpi=300)
+  plt.savefig("bin_compare_lsr.png", dpi=300)
   plt.show()
 
 
@@ -119,7 +119,6 @@ def bin_smooth_data(xi, yi, bandwidth):
         smoothed_yi (array): the smoothed y-coordinates.
     """
     smoothed_yi = []
-    smoothed_xi = []
 
     for i in range(len(xi)):
         x_in_window = []
@@ -134,9 +133,8 @@ def bin_smooth_data(xi, yi, bandwidth):
         # find the mean x and y on the interval 
         mean_xi = np.mean(x_in_window)
         mean_yi = np.mean(y_in_window)
-        smoothed_xi.append(mean_xi)
         smoothed_yi.append(mean_yi)
     
-    return np.array(smoothed_xi), np.array(smoothed_yi)
+    return np.array(xi), np.array(smoothed_yi)
 
 driver()
