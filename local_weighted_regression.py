@@ -4,7 +4,7 @@ from noise_func import uniform, normal, generate_noisy_data
 from solver_noise import create_M, householder_qr, back_substitution
 from WLSQ_working import weighted_least_squares
 
-'''
+
 def driver():
   # number of points to sample
   N = 100
@@ -13,7 +13,8 @@ def driver():
   b = 2
 
   # functions to approximate
-  f1 = lambda x: x**5 - 3*x**3 + 5*x
+  #f1 = lambda x: x**5 - 3*x**3 + 5*x
+  f1 = lambda x: x * np.exp(-x**2)
   f2 = lambda x: x * np.exp(-x**2)
 
   # sample points
@@ -51,8 +52,8 @@ def driver():
     fex_noise2 = f2(xeval_noisy)
 
     # add smoothing
-    fex_smooth1 = local_smooth(xeval, fex_noise1, (b-a)/10)
-    fex_smooth2 = local_smooth(xeval, fex_noise2, (b-a)/10)
+    fex_smooth1 = local_smooth(xeval, fex_noise1, (b-a)/10, 0.5, 1)
+    fex_smooth2 = local_smooth(xeval, fex_noise2, (b-a)/10, 0.5, 2)
 
     # noisy input design matrix
     Mnoisy = create_M(xeval_noisy, n)
@@ -77,39 +78,39 @@ def driver():
     y_poly_smooth1 = sum(c_smooth1[i] * x_poly ** i for i in range(n + 1))
     y_poly_smooth2 = sum(c_smooth2[i] * x_poly ** i for i in range(n + 1))
 
-    # function 1
-    axes[idx, 0].scatter(xeval, fex1, color='black', label='Original data')
-    axes[idx, 0].scatter(xeval, fex_noise1, color='grey', label='Noisy data')
-    axes[idx, 0].scatter(xeval, fex_smooth1, color='red', label='Smoothed data')
-    #axes[idx, 0].plot(x_poly, y_poly1, color='green', label='LSR approximation of original data')
-    #axes[idx, 0].plot(x_poly, y_poly_noise1, color='blue', label='LSR approximation of noisy data')
-    #axes[idx, 0].plot(x_poly, y_poly_smooth1, color='orange', label='LSR approximation of smoothed data')
+    # linear local weighted regression
+    axes[idx, 0].scatter(xeval, fex1, color='black', label=r"Original data: $f(x) = x e^{-x^2}$")
+    axes[idx, 0].scatter(xeval, fex_noise1, color='grey', label=r"Noisy data (\sigma = " + f"{sigma}")
+    axes[idx, 0].scatter(xeval, fex_smooth1, color='red', label='Linearly smoothed data')
+    axes[idx, 0].plot(x_poly, y_poly1, color='green', label='LSR approximation of original data')
+    axes[idx, 0].plot(x_poly, y_poly_noise1, color='blue', label='LSR approximation of noisy data')
+    axes[idx, 0].plot(x_poly, y_poly_smooth1, color='orange', label='LSR approximation of smoothed data')
     #axes[idx, 0].set_yscale('log')
     axes[idx, 0].legend()
     axes[idx, 0].set_xlabel("x")
     axes[idx, 0].set_ylabel("f(x) / Polynomial Approximation")
-    axes[idx, 0].set_title(r"$f(x) = x^5 - 3x^3 + 5x$ with Noise Level " + f"{sigma}")
+    #axes[idx, 0].set_title(r"$f(x) = x e^{-x^2}$ with Noise Level " + f"{sigma}")
 
-    # function 2
-    axes[idx, 1].scatter(xeval, fex2, color='black', label='Original data')
-    axes[idx, 1].scatter(xeval, fex_noise2, color='grey', label='Noisy data')
-    axes[idx, 1].scatter(xeval, fex_smooth2, color='red', label='Smoothed data')
-    #axes[idx, 1].plot(x_poly, y_poly2, color='green', label=f'LSR approximation of original data')
-    #axes[idx, 1].plot(x_poly, y_poly_noise2, color='blue', label='LSR approximation of noisy data')
-    #axes[idx, 1].plot(x_poly, y_poly_smooth2, color='orange', label='LSR approximation of smoothed data')
+    # quadratic local weighted regression
+    axes[idx, 1].scatter(xeval, fex2, color='black', label=r"Original data: $f(x) = x e^{-x^2}$")
+    axes[idx, 1].scatter(xeval, fex_noise2, color='grey', label=r"Noisy data (\sigma = " + f"{sigma}")
+    axes[idx, 1].scatter(xeval, fex_smooth2, color='red', label='Quadratically smoothed data')
+    axes[idx, 1].plot(x_poly, y_poly2, color='green', label=f'LSR approximation of original data')
+    axes[idx, 1].plot(x_poly, y_poly_noise2, color='blue', label='LSR approximation of noisy data')
+    axes[idx, 1].plot(x_poly, y_poly_smooth2, color='orange', label='LSR approximation of smoothed data')
     axes[idx, 1].legend()
     axes[idx, 1].set_xlabel("x")
     axes[idx, 1].set_ylabel("f(x) / Polynomial Approximation")
-    axes[idx, 1].set_title(r"$f(x) = x e^{-x^2}$ with Noise Level " + f"{sigma}")
+    #axes[idx, 1].set_title(r"$f(x) = x e^{-x^2}$ with Noise Level " + f"{sigma}")
 
   plt.tight_layout()
-  plt.savefig("lin_weight_compare_smoothing.png", dpi=300)
+  plt.savefig("compare_lsr_smoothing.png", dpi=300)
   plt.show()
 '''
 
 def driver():
     # Set parameters for testing
-    n_points = 100
+    n_points = 250
     noise_level = 20  # High noise to test the smoothing
     bandwidth = 0.3  # Bandwidth for local smoothing
     degree = 2  # Quadratic polynomial for local regression
@@ -132,10 +133,10 @@ def driver():
     plt.show()
     plt.savefig("test.png")
 
-
+'''
 
 # Generate a noisy dataset
-def generate_noisy_data(n_points=100, noise_level=5.0):
+def generate_noisy_data(n_points=1000, noise_level=5.0):
     # Generate x-values from a range
     xi = np.linspace(-10, 10, n_points)
     
@@ -154,7 +155,7 @@ def tri_weight(u):
         return (1 - abs(u)**3)**3
     return 0
 
-def local_smooth(xi, yi, bandwidth, span=0.5, degree=1):
+def local_smooth(xi, yi, bandwidth, span, degree):
     """
     Smooth data using local linear weighted regression with a specified bandwidth.
     Parameters:
@@ -202,10 +203,10 @@ def local_smooth(xi, yi, bandwidth, span=0.5, degree=1):
         # solve wls to find the coefficients of linear or quadratic polynomial (betas)
         c_local = weighted_least_squares(M_local, np.array(y_local), np.array(weights))
 
-        # calculate the smoothed value 
+        # polynomial evaluated at xj = xi gives smoothed value (just constant term)
         y_smoothed = 0
         for k in range(len(c_local)):
-            y_smoothed += c_local[k] * (xi[i] - xi[i])**k  # Polynomial centered at xi[i]
+            y_smoothed += c_local[k] * (xi[i] - xi[i])**k  
 
         smoothed_yi.append(y_smoothed)
     
