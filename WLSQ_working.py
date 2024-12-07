@@ -142,7 +142,7 @@ def driver():
     plt.plot(weights)
     plt.yscale('log')
     #plt.ax
-    print(weights)
+    #print(weights)
     c_wls = weighted_least_squares(M, fex_noise, weights)
     
     # Generate polynomial values using the coefficients

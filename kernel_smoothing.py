@@ -138,36 +138,4 @@ def kernel_smooth_data(xi, yi, bandwidth):
 
     return np.array(xi), np.array(smoothed_yi)
 
-
-
-def bin_smooth_data(xi, yi, bandwidth):
-    """
-    Smooth data using bin smoothing with a specified bandwidth.
-    Parameters:
-        xi (array): the x-coordinates of the data points.
-        yi (array): the y-coordinates of the data points.
-        bandwidth (float): the bandwidth (window size in x) for smoothing.
-    Returns:
-        smoothed_xi (array): the smoothed x-coordinates.
-        smoothed_yi (array): the smoothed y-coordinates.
-    """
-    smoothed_yi = []
-
-    for i in range(len(xi)):
-        x_in_window = []
-        y_in_window = []
-
-        # find points in bandwidth 
-        for j in range(len(xi)):
-            if(abs(xi[j]-xi[i])<=bandwidth):
-                    x_in_window.append(xi[j])
-                    y_in_window.append(yi[j])
-
-        # find the mean x and y on the interval 
-        mean_xi = np.mean(x_in_window)
-        mean_yi = np.mean(y_in_window)
-        smoothed_yi.append(mean_yi)
-    
-    return np.array(xi), np.array(smoothed_yi)
-
 driver()
