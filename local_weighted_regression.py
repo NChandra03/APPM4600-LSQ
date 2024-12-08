@@ -23,7 +23,7 @@ def driver():
   fex2 = f2(xeval)
 
   # choose order for noise level analysis
-  n = 5
+  n = 9
   noise_levels = [0.05, 0.1, 0.2, 0.3]
 
   # noiseless input design matrix

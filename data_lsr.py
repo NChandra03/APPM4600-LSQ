@@ -83,7 +83,7 @@ def driver():
             axes[row, col].set_title(f"{title} (Bandwidth {bandwidth.days} Days)")
             axes[row, col].grid()
             if row == 3:  # Add x-axis label to the last row
-                axes[row, col].set_xlabel("Time")
+                axes[row, col].set_xlabel("Date")
             if col == 0:  # Add y-axis label to the first column
                 axes[row, col].set_ylabel("Stock Price")
             axes[row, col].legend()
@@ -97,12 +97,12 @@ def driver():
     colors = ['red', 'orange', 'green', 'blue']
 
     plt.plot(x, y, color='black', label=f'{ticker} Closing Prices', alpha=0.5)
-   for method, title, color in zip(smoothing_methods, ['Bin Smoothing', 'Kernel Smoothing', 'Local Linear Smoothing', 'Local Quadratic Smoothing'], colors):
-    smoothed_y = method[1](x, np.array(y), bandwidths[0])
-    plt.plot(x, smoothed_y, label=f'{title} (BW {bandwidths[0].days} Days)', linestyle='--', color=color)
+    for method, title, color in zip(smoothing_methods, ['Bin Smoothing', 'Kernel Smoothing', 'Local Linear Smoothing', 'Local Quadratic Smoothing'], colors):
+        smoothed_y = method[1](x, np.array(y), bandwidths[0])
+        plt.plot(x, smoothed_y, label=f'{title} (BW {bandwidths[0].days} Days)', linestyle='--', color=color)
 
     plt.title(f'{ticker} Stock Price with All Smoothing Methods')
-    plt.xlabel("Time")
+    plt.xlabel("Date")
     plt.ylabel("Stock Price")
     plt.legend()
     plt.grid()

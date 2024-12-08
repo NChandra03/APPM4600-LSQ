@@ -43,7 +43,7 @@ def driver():
             axs[row, col].set_title(f"{title} (Bandwidth {bandwidth.days} Days)")
             axs[row, col].grid()
             if row == 3:  # Add x-axis label to the last row
-                axs[row, col].set_xlabel("Time")
+                axs[row, col].set_xlabel("Date")
             if col == 0:  # Add y-axis label to the first column
                 axs[row, col].set_ylabel("Stock Price")
             axs[row, col].legend()
@@ -62,7 +62,7 @@ def driver():
     plt.plot(x, local_smooth(x, np.array(y), bandwidths[0], 0.5, 2), color='blue', linestyle=':', label='Local Quadratic Smoothing')
 
     plt.title(f'{ticker} Stock Price with Smoothing Fits')
-    plt.xlabel("Time")
+    plt.xlabel("Date")
     plt.ylabel("Stock Price")
     plt.legend()
     plt.grid()
